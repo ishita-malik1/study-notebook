@@ -58,7 +58,10 @@ module.exports = async function (context, req) {
     const profile = await updateLearningProfileAfterSession(type, {
       scores,
       feedback,
-      caseMetadata,
+      caseMetadata: {
+        ...caseMetadata,
+        domain: caseMetadata?.domain || caseMetadata?.practiceDomain,
+      },
     });
 
     const habitKey = HABIT_KEYS[type];

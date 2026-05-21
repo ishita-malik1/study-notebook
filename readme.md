@@ -81,6 +81,13 @@ Add to `api/local.settings.json` and Azure Portal for case generation:
 | POST | `/api/evaluateSession` | Score live practice session |
 | POST | `/api/saveLiveSession` | Save live session + update profile + mark habit |
 | GET | `/api/learningProfile?type=` | Fetch learning profile |
+| POST | `/api/learningProfile` | Diagnostic onboarding (first session) |
+
+## Adaptive case generation
+
+From **session 4** (`sessions_total >= 3`), cases target weak areas, avoid recent problem types/domains, and match `current_level`. Sessions 1–3 stay at **beginner** difficulty. **Advanced** never before session 10.
+
+See `context.md` for full architecture and file map.
 
 ## Routes
 

@@ -25,19 +25,22 @@ export function incrementSessionCount(caseType) {
   return next;
 }
 
+/** Profile for case generation — server applies adaptive rules; null = fallback */
 export async function getLearningProfile(caseType) {
-  if (getSessionCount(caseType) < 3) {
-    return null;
-  }
-
   try {
     const profile = await fetchLearningProfile(caseType);
+    if (!profile?.exists) return null;
     return profile;
   } catch {
-    return {
-      weakSteps: [],
-      weak_areas: [],
-      recentProblemTypes: [],
-    };
+    return null;
+  }
+}
+
+export async function needsDiagnostic(caseType) {
+  try {
+    const profile = await fetchLearningProfile(caseType);
+    return !profile?.exists || profile?.needsDiagnostic;
+  } catch {
+    return true;
   }
 }

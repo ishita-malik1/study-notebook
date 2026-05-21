@@ -9,6 +9,12 @@ const {
   CASE_QUALITY_RULES,
   WALKTHROUGH_CONVERSATION_RULES,
 } = require('./casePrompts');
+const {
+  buildGenerationPlan,
+  buildAdaptivePromptAppendix,
+  buildFallbackPlan,
+  normalizeDomain,
+} = require('./adaptiveCaseConfig');
 
 const MAX_ATTEMPTS = 3;
 const MIN_CONVERSATION_LENGTH = 12;
@@ -26,14 +32,6 @@ const REQUIRED_STEPS = [
   'step7',
   'step8',
 ];
-
-function pickProblemType(type, learningProfile) {
-  const pool = type === 'tpm' ? TPM_CASE_TYPES : PROBLEM_TYPES;
-  const recent = learningProfile?.recentProblemTypes || [];
-  const available = pool.filter((t) => !recent.includes(t));
-  const choices = available.length > 0 ? available : pool;
-  return choices[Math.floor(Math.random() * choices.length)];
-}
 
 function normalizeProblemType(value, expected) {
   if (!value) return expected;
@@ -232,12 +230,9 @@ function buildFrameworkPromptText(steps) {
     .join('\n');
 }
 
-function buildSystemPrompt(type, frameworkSteps, learningProfile) {
+function buildSystemPrompt(type, frameworkSteps, generationPlan) {
   const roleLabel = type === 'tpm' ? 'TPM' : 'PM';
-  let weakStepsNote = '';
-  if (learningProfile?.weakSteps?.length) {
-    weakStepsNote = `If learningProfile is provided, target the user's weak steps: ${JSON.stringify(learningProfile.weakSteps)}.`;
-  }
+  const adaptiveBlock = buildAdaptivePromptAppendix(generationPlan);
 
   return `You are a ${roleLabel} interview coach generating a realistic case study walkthrough.
 You will generate TWO cases in one response as a JSON object.
@@ -251,9 +246,9 @@ PAIRING RULES:
 4. The practice case must be a fresh scenario — different company, different domain, same problemType
 5. The conversation must follow these 8 steps in order, never skipping:
 ${buildFrameworkPromptText(frameworkSteps)}
-${weakStepsNote}
 
 ${WALKTHROUGH_CONVERSATION_RULES}
+${adaptiveBlock}
 
 CRITICAL JSON REQUIREMENTS:
 - Every candidate message MUST include "thinking", "says", and "coachNote" as separate non-empty strings
@@ -286,10 +281,12 @@ Return JSON with this exact shape:
 }`;
 }
 
-function buildUserPrompt(type, problemType) {
+function buildUserPrompt(type, generationPlan) {
   const label = type === 'tpm' ? 'TPM' : 'product';
   return `Generate a ${label} case study pair.
-Problem type to use (use this exact value for problemType in both cases): ${problemType}
+Problem type (exact value for problemType in BOTH cases): ${generationPlan.problemType}
+Walkthrough domain (exact value for walkthroughCase.domain): ${generationPlan.walkthroughDomain}
+Practice domain (exact value for practiceCase.domain): ${generationPlan.practiceDomain}
 Return ONLY valid JSON. No markdown. No explanation.`;
 }
 
@@ -330,7 +327,8 @@ function getCandidateValidationErrors(message) {
   return errors;
 }
 
-function getValidationErrors(result, expectedProblemType) {
+function getValidationErrors(result, generationPlan) {
+  const expectedProblemType = generationPlan.problemType;
   const errors = [];
   const walk = result?.walkthroughCase;
   const practice = result?.practiceCase;
@@ -359,12 +357,29 @@ function getValidationErrors(result, expectedProblemType) {
   ) {
     errors.push('same company in both cases');
   }
-  if (
-    walk.domain &&
-    practice.domain &&
-    walk.domain.toLowerCase() === practice.domain.toLowerCase()
-  ) {
+  const walkDomain = normalizeDomain(walk.domain);
+  const practiceDomain = normalizeDomain(practice.domain);
+
+  if (walkDomain && practiceDomain && walkDomain === practiceDomain) {
     errors.push('same domain in both cases');
+  }
+
+  if (
+    generationPlan.walkthroughDomain &&
+    walkDomain !== normalizeDomain(generationPlan.walkthroughDomain)
+  ) {
+    errors.push(
+      `walkthrough domain expected ${generationPlan.walkthroughDomain} got ${walk.domain}`
+    );
+  }
+
+  if (
+    generationPlan.practiceDomain &&
+    practiceDomain !== normalizeDomain(generationPlan.practiceDomain)
+  ) {
+    errors.push(
+      `practice domain expected ${generationPlan.practiceDomain} got ${practice.domain}`
+    );
   }
 
   if (walk.problemType !== practice.problemType) {
@@ -447,8 +462,8 @@ function getValidationErrors(result, expectedProblemType) {
   return errors;
 }
 
-function validateCasePair(result, expectedProblemType) {
-  return getValidationErrors(result, expectedProblemType).length === 0;
+function validateCasePair(result, generationPlan) {
+  return getValidationErrors(result, generationPlan).length === 0;
 }
 
 async function callOpenAI(systemPrompt, userPrompt) {
@@ -487,9 +502,19 @@ async function generateWalkthroughPair({
   log = console.log,
 }) {
   const frameworkSteps = applyStepOverrides(FRAMEWORK_STEPS, stepOverrides);
-  const problemType = pickProblemType(type, learningProfile);
-  const systemPrompt = buildSystemPrompt(type, frameworkSteps, learningProfile);
-  const userPrompt = buildUserPrompt(type, problemType);
+
+  let generationPlan;
+  try {
+    generationPlan = learningProfile
+      ? buildGenerationPlan(type, learningProfile)
+      : buildFallbackPlan(type);
+  } catch (err) {
+    log('buildGenerationPlan fallback:', err.message);
+    generationPlan = buildFallbackPlan(type);
+  }
+
+  const systemPrompt = buildSystemPrompt(type, frameworkSteps, generationPlan);
+  const userPrompt = buildUserPrompt(type, generationPlan);
 
   let lastError;
   let lastValidationErrors = [];
@@ -500,13 +525,23 @@ async function generateWalkthroughPair({
       const parsed = normalizeCasePair(
         parseModelJson(raw),
         frameworkSteps,
-        problemType
+        generationPlan.problemType
       );
 
-      const validationErrors = getValidationErrors(parsed, problemType);
+      const validationErrors = getValidationErrors(parsed, generationPlan);
 
       if (validationErrors.length === 0) {
-        return parsed;
+        return {
+          ...parsed,
+          generationMeta: {
+            problemType: generationPlan.problemType,
+            difficultyLevel: generationPlan.difficultyLevel,
+            walkthroughDomain: generationPlan.walkthroughDomain,
+            practiceDomain: generationPlan.practiceDomain,
+            weakAreas: generationPlan.weakAreas,
+            isAdaptive: generationPlan.isAdaptive,
+          },
+        };
       }
 
       lastValidationErrors = validationErrors;
@@ -534,8 +569,8 @@ async function generateWalkthroughPair({
 
 module.exports = {
   generateWalkthroughPair,
-  pickProblemType,
   validateCasePair,
   getValidationErrors,
   normalizeCasePair,
+  buildGenerationPlan,
 };

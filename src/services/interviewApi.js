@@ -22,6 +22,24 @@ export async function fetchLearningProfile(caseType) {
   return request(`/learningProfile?type=${encodeURIComponent(caseType)}`);
 }
 
+export async function submitDiagnostic({
+  type,
+  familiarity,
+  weakSteps,
+  rolePreference,
+}) {
+  return request('/learningProfile', {
+    method: 'POST',
+    body: JSON.stringify({
+      diagnostic: true,
+      type,
+      familiarity,
+      weakSteps,
+      rolePreference,
+    }),
+  });
+}
+
 export async function conductInterview({
   caseContext,
   conversationHistory,

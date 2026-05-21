@@ -2,6 +2,7 @@ node_modules
 dist
 .env
 .env.local
+context.md
 *.log
 .DS_Store
 local.settings.json
