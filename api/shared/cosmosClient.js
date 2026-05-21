@@ -31,7 +31,8 @@ function getPracticeSessionsContainer() {
 }
 
 function getLearningProfilesContainer() {
-  return getDatabase().container('learning_profiles');
+  // Container id must match Azure: readme uses `learning_profile` (singular)
+  return getDatabase().container('learning_profile');
 }
 
 module.exports = {

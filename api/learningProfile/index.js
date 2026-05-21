@@ -85,9 +85,15 @@ module.exports = async function (context, req) {
     context.res = { status: 405, body: { error: 'Method not allowed' } };
   } catch (error) {
     context.log.error('learningProfile error:', error.message || error);
+    const notFound =
+      error.code === 404 ||
+      String(error.message || '').includes('Resource Not Found');
+    const message = notFound
+      ? 'Cosmos container "learning_profile" not found. Create it in the studynotebook database with partition key /id (see readme).'
+      : error.message || 'Failed to process learning profile';
     context.res = {
-      status: 500,
-      body: { error: error.message || 'Failed to process learning profile' },
+      status: notFound ? 503 : 500,
+      body: { error: message },
     };
   }
 };
