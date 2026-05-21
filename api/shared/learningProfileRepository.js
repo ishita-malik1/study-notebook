@@ -1,4 +1,4 @@
-const { getDatabase } = require('./cosmosClient');
+const { getLearningProfilesContainer } = require('./cosmosClient');
 const { normalizeDomain } = require('./adaptiveCaseConfig');
 
 const DIFFICULTY_LEVELS = ['beginner', 'intermediate', 'advanced'];
@@ -46,7 +46,7 @@ function defaultProfile(caseType) {
 }
 
 function getLearningProfileContainer() {
-  return getDatabase().container('learning_profiles');
+  return getLearningProfilesContainer();
 }
 
 async function getLearningProfile(caseType) {
