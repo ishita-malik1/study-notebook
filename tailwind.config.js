@@ -2,6 +2,10 @@
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
+    screens: {
+      tablet: '600px',
+      desktop: '960px',
+    },
     extend: {
       fontFamily: {
         handwriting: ['Caveat', 'Kalam', 'Patrick Hand', 'cursive'],

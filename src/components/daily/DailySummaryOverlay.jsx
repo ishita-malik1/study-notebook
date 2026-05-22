@@ -33,11 +33,11 @@ export default function DailySummaryOverlay({ onClose }) {
         className="absolute inset-0 pointer-events-none notebook-page-content opacity-40"
         aria-hidden
       />
-      <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-8 font-body min-h-full">
+      <div className="relative max-w-2xl mx-auto px-4 tablet:px-8 py-8 font-body min-h-full">
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 sm:right-8 text-2xl text-gray-500 hover:text-gray-800"
+          className="absolute top-4 right-4 tablet:right-8 text-2xl text-gray-500 hover:text-gray-800"
           aria-label="Close"
         >
           ✕

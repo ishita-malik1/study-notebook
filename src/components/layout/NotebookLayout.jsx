@@ -5,33 +5,34 @@ import PageTransition from './PageTransition';
 import ErrorBoundary from './ErrorBoundary';
 import DailySummaryOverlay from '../daily/DailySummaryOverlay';
 import { useStreaks } from '../../hooks/useStreaks';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { getTopStreakForStrip } from '../../utils/streakDisplay';
 import { isAfterFivePm } from '../../utils/dailySummaryUtils';
 
-const SPIRAL_RING_COUNT = 18;
+const SPIRAL_RING_COUNTS = {
+  mobile: 8,
+  tablet: 12,
+  desktop: 18,
+};
 
 export default function NotebookLayout() {
   const today = format(new Date(), 'EEEE, MMM d');
   const { streaks, loading: streaksLoading } = useStreaks();
+  const breakpoint = useBreakpoint();
   const topStreak = streaksLoading
     ? 'Loading streaks...'
     : getTopStreakForStrip(streaks) || 'No active streaks yet';
   const [summaryOpen, setSummaryOpen] = useState(false);
   const showEndDay = isAfterFivePm();
+  const ringCount = SPIRAL_RING_COUNTS[breakpoint] ?? SPIRAL_RING_COUNTS.desktop;
 
   return (
     <div className="min-h-screen flex flex-col bg-notebook-charcoal notebook-app-min">
-      <div className="flex flex-1 flex-col min-h-screen min-h-[100dvh] w-full min-w-[768px]">
+      <div className="flex flex-1 flex-col min-h-screen min-h-[100dvh] w-full">
         <div className="flex flex-1 min-h-0">
-          <div
-            className="hidden sm:flex flex-shrink-0 flex-col items-center justify-between py-4 md:py-6"
-            style={{
-              width: '48px',
-              backgroundColor: '#2c2c2c',
-            }}
-          >
-            {Array.from({ length: SPIRAL_RING_COUNT }).map((_, i) => (
-              <div key={i} className="spiral-ring scale-90 md:scale-100" />
+          <div className="notebook-spiral-column flex-shrink-0 flex flex-col items-center justify-between py-3 tablet:py-4 desktop:py-6">
+            {Array.from({ length: ringCount }).map((_, i) => (
+              <div key={i} className="spiral-ring" />
             ))}
           </div>
 
@@ -43,7 +44,7 @@ export default function NotebookLayout() {
                 className="relative flex-1 overflow-auto"
                 style={{ backgroundColor: '#fdf8f0' }}
               >
-                <div className="notebook-margin-line hidden sm:block" />
+                <div className="notebook-margin-line" />
                 <div className="notebook-page-content notebook-page-content--responsive relative mx-auto w-full max-w-[960px] min-h-full pb-4">
                   <ErrorBoundary>
                     <PageTransition />
@@ -53,14 +54,16 @@ export default function NotebookLayout() {
             </div>
 
             <div
-              className="flex-shrink-0 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-0 px-3 sm:px-6 py-2 sm:py-0 text-white text-xs sm:text-sm font-body min-h-[48px]"
+              className="notebook-bottom-strip flex-shrink-0 flex flex-col tablet:flex-row items-start tablet:items-center gap-1 tablet:gap-0 px-3 tablet:px-6 py-2 tablet:py-0 text-white text-xs tablet:text-sm font-body"
               style={{ backgroundColor: '#2c2c2c' }}
             >
-              <span className="sm:flex-1 whitespace-nowrap">{today}</span>
-              <span className="sm:flex-1 sm:text-center opacity-90 truncate max-w-full">
+              <span className="notebook-bottom-strip-date tablet:flex-1 whitespace-nowrap">
+                {today}
+              </span>
+              <span className="notebook-bottom-strip-streak tablet:flex-1 tablet:text-center opacity-90 truncate max-w-full">
                 {topStreak}
               </span>
-              <span className="sm:flex-1 sm:text-right flex justify-start sm:justify-end w-full sm:w-auto">
+              <span className="hidden desktop:block desktop:flex-1 desktop:text-right">
                 {showEndDay ? (
                   <button
                     type="button"

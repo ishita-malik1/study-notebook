@@ -66,7 +66,7 @@ export function computeStepAveragesFromSessions(liveSessions) {
 export function getRadarData(liveSessions) {
   const averages = computeStepAveragesFromSessions(liveSessions);
   return FRAMEWORK_STEPS.map((step) => ({
-    step: STEP_SHORT_NAMES[step.id],
+    step: step.name,
     fullName: step.name,
     score: averages[step.id] || 0,
     stepId: step.id,

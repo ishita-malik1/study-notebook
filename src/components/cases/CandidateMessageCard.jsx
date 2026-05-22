@@ -8,7 +8,7 @@ export default function CandidateMessageCard({ message }) {
   const coachNote = message.coachNote || '';
 
   return (
-    <div className="candidate-card flex w-full max-w-[92%] flex-col gap-2 ml-auto">
+    <div className="candidate-card conversation-bubble flex w-full flex-col gap-2 ml-auto">
       <span className="font-body text-[10px] font-semibold uppercase tracking-wider text-gray-400 self-end">
         Ideal Answer
       </span>

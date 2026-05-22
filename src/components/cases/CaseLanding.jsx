@@ -7,7 +7,7 @@ export default function CaseLanding({
 }) {
   return (
     <div className="case-landing mt-6">
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 desktop:grid-cols-2">
         <div className="case-action-card rounded-lg border border-[#e8dcc8] bg-white/80 p-6 shadow-sm">
           <span className="text-3xl" aria-hidden>
             📖

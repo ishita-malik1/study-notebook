@@ -41,7 +41,7 @@ export default function WalkthroughView({
 
   return (
     <div className="case-walkthrough mt-4 pb-8">
-      <StickyNote className="mb-6 -rotate-1">
+      <StickyNote tilt className="mb-6">
         <p className="font-body text-sm font-semibold text-amber-900/70 mb-1">
           Case Prompt — {walkthroughCase.company} ({walkthroughCase.domain})
         </p>
@@ -57,7 +57,7 @@ export default function WalkthroughView({
           <p className="font-body text-lg font-semibold text-emerald-800">
             Practice Case Unlocked 🎯
           </p>
-          <StickyNote className="mt-4 rotate-1">
+          <StickyNote tilt className="mt-4">
             <p className="font-body text-sm font-semibold text-amber-900/70 mb-1">
               Your practice case — {practiceCase.company} ({practiceCase.domain})
             </p>

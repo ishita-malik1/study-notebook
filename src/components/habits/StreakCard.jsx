@@ -1,6 +1,6 @@
 export default function StreakCard({ icon, label, current, longest }) {
   return (
-    <div className="streak-card flex flex-col items-center rounded-lg border border-[#e8dcc8] bg-white/70 px-4 py-5 shadow-sm">
+    <div className="streak-card streak-card-mobile flex flex-col items-center rounded-lg border border-[#e8dcc8] bg-white/70 px-4 py-5 tablet:py-5 shadow-sm">
       <span className="text-2xl" aria-hidden>
         {icon}
       </span>
