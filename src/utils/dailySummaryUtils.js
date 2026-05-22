@@ -18,10 +18,10 @@ export function getHabitSummaryMessage(rows) {
   const completed = rows.filter((r) => r.done).length;
   const missing = rows.filter((r) => !r.done).map((r) => r.name);
 
-  if (completed === 4) {
+  if (completed === 6) {
     return { completed, message: 'Perfect day. 🎉' };
   }
-  if (completed >= 2) {
+  if (completed >= 3) {
     return {
       completed,
       message: `${missing.join(', ')} — get them done before midnight`,

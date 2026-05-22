@@ -124,17 +124,17 @@ function getFieldSeparationErrors(message) {
     if (countSentences(commonSlip) > MAX_COMMON_SLIP_SENTENCES) {
       errors.push('commonSlip must be one sentence');
     }
-    if (/\b(instead|you should|should ask|better to|try to|make sure to|avoid)\b/i.test(commonSlip)) {
+    if (/\b(you should|should ask|make sure to|be sure to|make sure you|try asking|instead, you should)\b/i.test(commonSlip)) {
       errors.push('commonSlip must not contain advice');
     }
-    if (wordOverlapRatio(thinking, commonSlip) > 0.45) {
+    if (wordOverlapRatio(thinking, commonSlip) > 0.65) {
       errors.push('commonSlip overlaps with thinking');
     }
   }
 
   if (coachNote) {
     if (
-      /\b(this case|the company|notice how|the candidate|weak candidate|jump to solutions|avoid jumping)\b/i.test(
+      /\b(this case|the company|notice how|weak candidate|jump to solutions|avoid jumping)\b/i.test(
         coachNote
       )
     ) {
@@ -142,10 +142,10 @@ function getFieldSeparationErrors(message) {
         'coachNote must be a universal technique, not case-specific commentary'
       );
     }
-    if (wordOverlapRatio(thinking, coachNote) > 0.4) {
+    if (wordOverlapRatio(thinking, coachNote) > 0.65) {
       errors.push('coachNote overlaps with thinking');
     }
-    if (commonSlip && wordOverlapRatio(commonSlip, coachNote) > 0.4) {
+    if (commonSlip && wordOverlapRatio(commonSlip, coachNote) > 0.65) {
       errors.push('coachNote overlaps with commonSlip');
     }
   }

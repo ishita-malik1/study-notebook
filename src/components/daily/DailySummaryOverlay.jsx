@@ -79,7 +79,7 @@ export default function DailySummaryOverlay({ onClose }) {
                 ))}
               </ul>
               <p className="mt-3 text-gray-700">
-                You completed {habitSummary.completed}/4 habits today
+                You completed {habitSummary.completed}/6 habits today
               </p>
               <p className="text-sm text-gray-600 mt-1">{habitSummary.message}</p>
             </section>

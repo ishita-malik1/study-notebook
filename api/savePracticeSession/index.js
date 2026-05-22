@@ -46,6 +46,31 @@ module.exports = async function (context, req) {
       conversation: body.conversation,
     });
 
+    try {
+      const { getHabitByDate, upsertHabit } = require('../shared/habitsRepository');
+      const { getStreaks, upsertStreaks } = require('../shared/streaksRepository');
+      const { applyStreakToggle } = require('../shared/streakLogic');
+
+      const todayStr = date;
+      const habitKey = body.type === 'tpm' ? 'tpm_walkthrough' : 'product_walkthrough';
+
+      const existing = await getHabitByDate(todayStr);
+      if (!existing[habitKey]) {
+        await upsertHabit(todayStr, habitKey, true);
+        const currentStreaks = await getStreaks();
+        const updatedStreaks = applyStreakToggle(
+          currentStreaks,
+          habitKey,
+          true,
+          todayStr,
+          false
+        );
+        await upsertStreaks(updatedStreaks);
+      }
+    } catch (err) {
+      context.log.warn('automatic save walkthrough habit ticking failed:', err.message);
+    }
+
     context.res = { status: 200, body: saved };
   } catch (error) {
     context.log.error('savePracticeSession error:', error);

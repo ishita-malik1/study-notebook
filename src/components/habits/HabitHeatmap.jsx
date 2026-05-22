@@ -73,10 +73,10 @@ export default function HabitHeatmap({
               className="heatmap-cell"
               style={{ backgroundColor: color }}
               onMouseEnter={() =>
-                setTooltip(`${label} — ${count}/4 habits`)
+                setTooltip(`${label} — ${count}/6 habits`)
               }
               onMouseLeave={() => setTooltip(null)}
-              title={`${label} — ${count}/4 habits`}
+              title={`${label} — ${count}/6 habits`}
             />
           );
         })}
@@ -86,7 +86,7 @@ export default function HabitHeatmap({
       )}
       <div className="font-body mt-3 flex items-center gap-2 text-xs text-gray-500">
         <span>Less</span>
-        {[0, 1, 2, 3, 4].map((n) => (
+        {[0, 1, 2, 3, 4, 5, 6].map((n) => (
           <span
             key={n}
             className="heatmap-legend-swatch"

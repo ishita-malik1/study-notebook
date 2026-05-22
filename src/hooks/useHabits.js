@@ -14,7 +14,9 @@ function defaultTodayHabits(date) {
     date,
     jobs_applied: false,
     recruiters_contacted: false,
+    product_walkthrough: false,
     product_practiced: false,
+    tpm_walkthrough: false,
     tpm_practiced: false,
   };
 }

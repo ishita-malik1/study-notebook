@@ -1,3 +1,4 @@
+const { format } = require('date-fns');
 const { getOpenAIClient } = require('../shared/openaiClient');
 const {
   buildScoringSystemPrompt,
@@ -69,6 +70,32 @@ module.exports = async function (context, req) {
 
     const parsed = parseModelJson(content);
     const evaluation = normalizeEvaluation(parsed, Boolean(hintUsed));
+
+    try {
+      const { getHabitByDate, upsertHabit } = require('../shared/habitsRepository');
+      const { getStreaks, upsertStreaks } = require('../shared/streaksRepository');
+      const { applyStreakToggle } = require('../shared/streakLogic');
+
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+      const type = caseContext.type || 'product';
+      const habitKey = type === 'tpm' ? 'tpm_practiced' : 'product_practiced';
+
+      const existing = await getHabitByDate(todayStr);
+      if (!existing[habitKey]) {
+        await upsertHabit(todayStr, habitKey, true);
+        const currentStreaks = await getStreaks();
+        const updatedStreaks = applyStreakToggle(
+          currentStreaks,
+          habitKey,
+          true,
+          todayStr,
+          false
+        );
+        await upsertStreaks(updatedStreaks);
+      }
+    } catch (err) {
+      context.log.warn('automatic evaluate session habit ticking failed:', err.message);
+    }
 
     context.res = { status: 200, body: evaluation };
   } catch (error) {

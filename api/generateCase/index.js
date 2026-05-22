@@ -1,3 +1,4 @@
+const { format } = require('date-fns');
 const { generateWalkthroughPair } = require('../shared/caseGenerator');
 const { TPM_STEP_OVERRIDES } = require('../shared/caseFrameworkData');
 const {
@@ -54,6 +55,31 @@ module.exports = async function (context, req) {
       await recordCaseGeneration(type, result);
     } catch (err) {
       context.log.warn('recordCaseGeneration failed:', err.message);
+    }
+
+    try {
+      const { getHabitByDate, upsertHabit } = require('../shared/habitsRepository');
+      const { getStreaks, upsertStreaks } = require('../shared/streaksRepository');
+      const { applyStreakToggle } = require('../shared/streakLogic');
+
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+      const habitKey = type === 'tpm' ? 'tpm_walkthrough' : 'product_walkthrough';
+
+      const existing = await getHabitByDate(todayStr);
+      if (!existing[habitKey]) {
+        await upsertHabit(todayStr, habitKey, true);
+        const currentStreaks = await getStreaks();
+        const updatedStreaks = applyStreakToggle(
+          currentStreaks,
+          habitKey,
+          true,
+          todayStr,
+          false
+        );
+        await upsertStreaks(updatedStreaks);
+      }
+    } catch (err) {
+      context.log.warn('automatic walkthrough habit ticking failed:', err.message);
     }
 
     context.res = { status: 200, body: result };
