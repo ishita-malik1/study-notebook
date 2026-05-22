@@ -6,6 +6,7 @@ import {
   subDays,
 } from 'date-fns';
 import { HEATMAP_COLORS, HABIT_DEFINITIONS } from '../../constants/habits';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
 
 function countCompleted(habitDoc) {
   if (!habitDoc) return 0;
@@ -16,13 +17,20 @@ export default function HabitHeatmap({
   history,
   loading,
   compact = false,
-  title = 'Activity — last 90 days',
+  title,
 }) {
   const [tooltip, setTooltip] = useState(null);
+  const breakpoint = useBreakpoint();
+  const daysBack = breakpoint === 'mobile' ? 29 : 89;
+  const defaultTitle =
+    breakpoint === 'mobile'
+      ? 'Activity — last 30 days'
+      : 'Activity — last 90 days';
+  const displayTitle = title ?? defaultTitle;
 
   const { days, byDate } = useMemo(() => {
     const end = new Date();
-    const start = subDays(end, 89);
+    const start = subDays(end, daysBack);
     const intervalDays = eachDayOfInterval({ start, end });
 
     const map = {};
@@ -34,7 +42,7 @@ export default function HabitHeatmap({
       days: intervalDays.map((d) => format(d, 'yyyy-MM-dd')),
       byDate: map,
     };
-  }, [history]);
+  }, [history, daysBack]);
 
   if (loading) {
     return (
@@ -43,7 +51,7 @@ export default function HabitHeatmap({
   }
 
   return (
-    <div className="habit-heatmap">
+    <div className="habit-heatmap overflow-hidden">
       <h2
         className={
           compact
@@ -51,9 +59,9 @@ export default function HabitHeatmap({
             : 'font-handwriting text-2xl text-gray-800 mb-3'
         }
       >
-        {title}
+        {displayTitle}
       </h2>
-      <div className="flex flex-wrap gap-1">
+      <div className="heatmap-grid flex flex-wrap gap-1">
         {days.map((dateStr) => {
           const count = countCompleted(byDate[dateStr]);
           const color = HEATMAP_COLORS[count] || HEATMAP_COLORS[0];

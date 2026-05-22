@@ -13,6 +13,7 @@ import {
   getStepInsights,
   formatSessionDate,
 } from '../../utils/progressMetrics';
+import { useChartHeight } from '../../hooks/useBreakpoint';
 
 const CHART_FONT = 'Lato, system-ui, sans-serif';
 
@@ -48,6 +49,8 @@ function CustomTooltip({ active, payload }) {
 }
 
 export default function ScoreOverTimeChart({ liveSessions }) {
+  const chartHeight = useChartHeight(280);
+
   if (liveSessions.length < 2) {
     return (
       <div className="progress-section">
@@ -73,8 +76,11 @@ export default function ScoreOverTimeChart({ liveSessions }) {
       <h3 className="font-body text-lg font-semibold text-gray-800 mb-4">
         Score Over Time
       </h3>
-      <div className="w-full chart-min-height h-[280px]" style={{ background: '#fdf8f0', minHeight: 200 }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <div
+        className="w-full max-w-full overflow-hidden"
+        style={{ background: '#fdf8f0', height: chartHeight }}
+      >
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <LineChart data={chartData} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
             <CartesianGrid stroke="#c5d0e6" strokeDasharray="0" />
             <XAxis
@@ -126,7 +132,7 @@ export default function ScoreOverTimeChart({ liveSessions }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-3">
+      <div className="mt-4 grid grid-cols-1 gap-2 desktop:grid-cols-3">
         {insights.bestStep && (
           <p className="font-body text-sm text-gray-700">
             📈 Your best step:{' '}

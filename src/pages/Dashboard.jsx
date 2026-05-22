@@ -8,7 +8,9 @@ import ScoreOverTimeChart from '../components/dashboard/ScoreOverTimeChart';
 import StreakStatsTable from '../components/dashboard/StreakStatsTable';
 import HabitHeatmap from '../components/habits/HabitHeatmap';
 import LoadingLine from '../components/layout/LoadingLine';
+import DailySummaryOverlay from '../components/daily/DailySummaryOverlay';
 import { getLiveSessions } from '../utils/progressMetrics';
+import { isAfterFivePm } from '../utils/dailySummaryUtils';
 
 function SectionDivider() {
   return (
@@ -26,6 +28,8 @@ export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const showEndDay = isAfterFivePm();
 
   useEffect(() => {
     fetchProgress()
@@ -82,11 +86,22 @@ export default function Dashboard() {
     <div className="progress-page pb-10">
       <PageHeading>My Progress</PageHeading>
 
+      {showEndDay && (
+        <button
+          type="button"
+          onClick={() => setSummaryOpen(true)}
+          className="desktop:hidden w-full mt-4 py-3 rounded-lg font-body text-sm font-semibold text-white transition-colors"
+          style={{ backgroundColor: '#2c2c2c' }}
+        >
+          <span className="text-[#f4a261]">End My Day</span>
+        </button>
+      )}
+
       <section className="mt-6">
         <h2 className="font-handwriting text-2xl text-gray-800 mb-4">
           Where You Stand Today
         </h2>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 desktop:grid-cols-2">
           <LevelPanel
             learningProfile={data.learningProfile}
             liveSessionCount={liveCount}
@@ -118,8 +133,8 @@ export default function Dashboard() {
         <h2 className="font-handwriting text-2xl text-gray-800 mb-4">
           Habits &amp; Consistency
         </h2>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="progress-panel rounded-lg border border-[#e8dcc8] bg-white/80 p-5 shadow-sm">
+        <div className="grid grid-cols-1 gap-4 desktop:grid-cols-2">
+          <div className="progress-panel rounded-lg border border-[#e8dcc8] bg-white/80 p-5 shadow-sm overflow-hidden">
             <HabitHeatmap
               history={data.habits}
               loading={false}
@@ -134,6 +149,10 @@ export default function Dashboard() {
           />
         </div>
       </section>
+
+      {summaryOpen && (
+        <DailySummaryOverlay onClose={() => setSummaryOpen(false)} />
+      )}
     </div>
   );
 }

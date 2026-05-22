@@ -26,7 +26,7 @@ export default function ConversationMessage({ message, showStepPill }) {
       <span className="font-body text-[10px] font-semibold uppercase tracking-wider text-gray-400">
         Interviewer
       </span>
-      <div className="max-w-[85%] rounded-2xl bg-sky-100 px-4 py-3 font-body text-sm leading-relaxed text-gray-800">
+      <div className="conversation-bubble rounded-2xl bg-sky-100 px-4 py-3 font-body text-sm leading-relaxed text-gray-800">
         {message.content}
       </div>
     </div>

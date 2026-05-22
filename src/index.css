@@ -26,54 +26,83 @@ body {
   --notebook-cream: #fdf8f0;
   /* Nudge so handwriting baselines sit on the blue lines (Patrick Hand / Kalam) */
   --baseline-nudge: 7px;
+  --spiral-width: 24px;
+  --margin-line-left: -9999px;
+  --page-padding-left: 12px;
+  --page-padding-right: 12px;
 }
 
-/* Red margin line */
+@media (min-width: 600px) {
+  :root {
+    --spiral-width: 40px;
+    --margin-line-left: 50px;
+    --page-padding-left: 66px;
+    --page-padding-right: 16px;
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --spiral-width: 60px;
+    --margin-line-left: 80px;
+    --page-padding-left: 104px;
+    --page-padding-right: 24px;
+  }
+}
+
+/* Red margin line — hidden below 600px */
 .notebook-margin-line {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 80px;
+  left: var(--margin-line-left);
   width: 1px;
   background-color: #e8a0a0;
   pointer-events: none;
   z-index: 2;
+  display: none;
 }
 
-@media (max-width: 639px) {
+@media (min-width: 600px) {
   .notebook-margin-line {
-    left: 16px;
+    display: block;
   }
 }
 
 .notebook-page-content--responsive {
-  padding-left: 16px;
-  padding-right: 12px;
+  padding-left: var(--page-padding-left);
+  padding-right: var(--page-padding-right);
 }
 
-@media (min-width: 640px) {
-  .notebook-page-content--responsive {
-    padding-left: 64px;
-    padding-right: 16px;
-  }
-}
-
-@media (min-width: 768px) {
-  .notebook-page-content--responsive {
-    padding-left: 96px;
-    padding-right: 16px;
-  }
+/* Spiral binding column */
+.notebook-spiral-column {
+  width: var(--spiral-width);
+  background-color: #2c2c2c;
 }
 
 /* Spiral ring styling */
 .spiral-ring {
-  width: 16px;
-  height: 16px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #ffffff;
   box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.25),
     inset 0 -1px 2px rgba(255, 255, 255, 0.8);
+}
+
+@media (min-width: 600px) {
+  .spiral-ring {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (min-width: 960px) {
+  .spiral-ring {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 /*
@@ -146,6 +175,19 @@ body {
   cursor: default;
 }
 
+@media (max-width: 599px) {
+  .habit-heatmap .heatmap-grid {
+    gap: 2px;
+  }
+
+  .habit-heatmap .heatmap-cell {
+    width: 12px;
+    height: 12px;
+    min-width: 12px;
+    min-height: 12px;
+  }
+}
+
 .habit-heatmap .heatmap-legend-swatch {
   display: inline-block;
   width: 12px;
@@ -170,6 +212,23 @@ body {
   background: #fef9c3;
   border: 1px solid #fde047;
   box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.12);
+  max-width: 100%;
+}
+
+@media (min-width: 960px) {
+  .sticky-note {
+    max-width: 600px;
+  }
+
+  .sticky-note--tilt {
+    transform: rotate(-1deg);
+  }
+}
+
+@media (max-width: 599px) {
+  .sticky-note {
+    font-size: 14px;
+  }
 }
 
 .case-btn-primary {
@@ -227,6 +286,10 @@ body {
 .recharts-wrapper,
 .recharts-surface {
   font-family: 'Lato', system-ui, sans-serif !important;
+}
+
+.recharts-wrapper {
+  max-width: 100%;
 }
 
 .chart-min-height {
@@ -383,7 +446,127 @@ body {
 }
 
 .notebook-app-min {
-  overflow-x: auto;
+  overflow-x: hidden;
+}
+
+/* Nav tabs — mobile icon layout */
+.nav-tabs {
+  min-height: 44px;
+}
+
+@media (max-width: 599px) {
+  .nav-tab-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    height: 44px;
+    padding: 4px 6px 2px;
+    white-space: nowrap;
+  }
+
+  .nav-tab-icon {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .nav-tab-label-mobile {
+    font-size: 9px;
+    line-height: 1.1;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+}
+
+/* Practice chat — sticky input on mobile */
+@media (max-width: 599px) {
+  .practice-chat-input-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    background: rgba(253, 248, 240, 0.98);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .practice-chat-messages {
+    padding-bottom: calc(120px + 16px);
+  }
+
+  .practice-send-btn {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* Conversation bubbles */
+.conversation-bubble {
+  max-width: 92%;
+}
+
+@media (min-width: 960px) {
+  .conversation-bubble {
+    max-width: 70%;
+  }
+}
+
+/* Bottom strip — mobile stack */
+.notebook-bottom-strip {
+  min-height: 48px;
+}
+
+@media (max-width: 599px) {
+  .notebook-bottom-strip {
+    min-height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    gap: 4px;
+  }
+
+  .notebook-bottom-strip-date {
+    width: 100%;
+  }
+
+  .notebook-bottom-strip-streak {
+    width: 100%;
+    text-align: left;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
+
+/* Scoring screen — mobile */
+@media (max-width: 599px) {
+  .scoring-step-row {
+    font-size: 13px;
+  }
+
+  .scoring-step-bar {
+    height: 6px;
+  }
+
+  .scoring-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .scoring-actions .case-btn-primary,
+  .scoring-actions .case-btn-secondary {
+    width: 100%;
+  }
+}
+
+/* Streak cards — reduced padding on mobile */
+@media (max-width: 599px) {
+  .streak-card-mobile {
+    padding: 0.75rem;
+  }
 }
 
 .end-day-btn {

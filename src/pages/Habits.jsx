@@ -44,7 +44,7 @@ export default function Habits() {
           </p>
         )}
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 desktop:grid-cols-2">
           {habitsWithMeta.map((habit) => (
             <HabitCard
               key={habit.key}
@@ -63,7 +63,7 @@ export default function Habits() {
         <h2 className="font-handwriting text-2xl text-gray-800 mb-4">
           Streak Summary
         </h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 tablet:gap-4 desktop:grid-cols-4">
           {HABIT_DEFINITIONS.map((habit) => {
             const entry = streaks?.[habit.streakKey];
             return (

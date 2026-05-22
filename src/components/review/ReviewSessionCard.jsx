@@ -30,7 +30,7 @@ export default function ReviewSessionCard({ session, onViewConversation }) {
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
-        className="w-full text-left px-4 py-3 flex flex-wrap items-center gap-2 sm:gap-3 font-body hover:bg-[#fdf8f0]/80 transition-colors"
+        className="w-full text-left px-4 py-3 flex flex-wrap items-center gap-2 tablet:gap-3 font-body hover:bg-[#fdf8f0]/80 transition-colors"
       >
         <span className="text-sm text-gray-500 w-14 flex-shrink-0">{dateLabel}</span>
         <span

@@ -54,11 +54,11 @@ export default function PracticeSession({
 
   return (
     <div className="practice-session mt-4 flex flex-col min-h-[60vh]">
-      <StickyNote className="mb-4 -rotate-1 flex-shrink-0">
+      <StickyNote tilt className="mb-4 flex-shrink-0">
         <p className="font-body text-sm font-semibold text-amber-900/70 mb-1">
           Practice Case — {practiceCase.company} ({practiceCase.domain})
         </p>
-        <p className="font-body text-sm sm:text-base leading-relaxed">
+        <p className="font-body text-sm tablet:text-base leading-relaxed">
           {practiceCase.problemStatement}
         </p>
       </StickyNote>
@@ -68,7 +68,7 @@ export default function PracticeSession({
           <button
             type="button"
             onClick={() => setHintOpen(true)}
-            className="text-xs sm:text-sm font-body px-3 py-1.5 rounded-md border border-gray-300 bg-white hover:bg-gray-50"
+            className="text-xs tablet:text-sm font-body px-3 py-1.5 rounded-md border border-gray-300 bg-white hover:bg-gray-50"
           >
             💡 Hint
           </button>
@@ -76,7 +76,7 @@ export default function PracticeSession({
             type="button"
             onClick={handleDone}
             disabled={practice.evaluating}
-            className="text-xs sm:text-sm font-body px-3 py-1.5 rounded-md border border-gray-800 bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
+            className="text-xs tablet:text-sm font-body px-3 py-1.5 rounded-md border border-gray-800 bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-50"
           >
             {practice.evaluating ? 'Scoring...' : '🏁 I\'m Done'}
           </button>
@@ -88,7 +88,7 @@ export default function PracticeSession({
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4">
+        <div className="practice-chat-messages flex-1 overflow-y-auto p-3 tablet:p-4 space-y-4">
           {practice.messages.map((msg) => (
             <div
               key={msg.id}
@@ -98,7 +98,7 @@ export default function PracticeSession({
               ].join(' ')}
             >
               {msg.role === 'assistant' ? (
-                <div className="max-w-[92%] sm:max-w-[85%]">
+                <div className="conversation-bubble">
                   <span className="font-body text-[10px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">
                     Interviewer
                   </span>
@@ -107,7 +107,7 @@ export default function PracticeSession({
                   </div>
                 </div>
               ) : (
-                <div className="max-w-[92%] sm:max-w-[85%] rounded-2xl bg-[#fefce8] px-4 py-3 text-sm leading-relaxed text-gray-800 border border-[#fde68a]">
+                <div className="conversation-bubble rounded-2xl bg-[#fefce8] px-4 py-3 text-sm leading-relaxed text-gray-800 border border-[#fde68a]">
                   {msg.content}
                 </div>
               )}
@@ -116,7 +116,7 @@ export default function PracticeSession({
 
           {practice.partialAssistant && (
             <div className="flex justify-start">
-              <div className="max-w-[92%] sm:max-w-[85%]">
+              <div className="conversation-bubble">
                 <span className="font-body text-[10px] font-semibold uppercase tracking-wider text-gray-400 block mb-1">
                   Interviewer
                 </span>
@@ -153,7 +153,7 @@ export default function PracticeSession({
           <div ref={practice.messagesEndRef} />
         </div>
 
-        <div className="flex-shrink-0 border-t border-[#e8dcc8] p-3 flex gap-2 items-end">
+        <div className="practice-chat-input-bar flex-shrink-0 border-t border-[#e8dcc8] p-3 flex gap-2 items-end">
           <textarea
             rows={3}
             value={practice.input}
@@ -167,7 +167,7 @@ export default function PracticeSession({
             type="button"
             onClick={practice.sendMessage}
             disabled={practice.loading || practice.streaming || !practice.input.trim()}
-            className="case-btn-primary whitespace-nowrap mb-1"
+            className="case-btn-primary practice-send-btn whitespace-nowrap mb-1"
           >
             Send →
           </button>

@@ -55,13 +55,13 @@ export default function ScoringScreen({
                 addressed ? 'border-gray-200 bg-white' : 'border-gray-100 bg-gray-50 opacity-70',
               ].join(' ')}
             >
-              <span className="flex-1 text-sm text-gray-700 min-w-0 truncate">
+              <span className="scoring-step-row flex-1 text-sm text-gray-700 min-w-0 truncate">
                 {step.name}
                 {!addressed && (
                   <span className="ml-2 text-xs text-gray-400">Not addressed</span>
                 )}
               </span>
-              <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="scoring-step-bar w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all"
                   style={{
@@ -78,7 +78,7 @@ export default function ScoringScreen({
         })}
       </section>
 
-      <section className="scoring-section mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+      <section className="scoring-section mt-8 grid grid-cols-1 gap-6 desktop:grid-cols-3">
         <div>
           <h4 className="font-semibold text-gray-800 mb-2">✅ What You Did Well</h4>
           <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
@@ -105,7 +105,7 @@ export default function ScoringScreen({
         </div>
       </section>
 
-      <section className="scoring-section mt-8 flex flex-wrap gap-3 justify-center">
+      <section className="scoring-actions scoring-section mt-8 flex flex-wrap gap-3 justify-center">
         <button
           type="button"
           onClick={onSave}
